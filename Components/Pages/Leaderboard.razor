@@ -1,0 +1,81 @@
+@page "/leaderboard"
+@using BlazorDash.Services
+@using BlazorDash.Data
+@inject LeaderboardService LeaderboardService
+
+<PageTitle>Blazor Dash - Leaderboard</PageTitle>
+
+<div class="leaderboard-container">
+  <div class="leaderboard-content">
+    <h1>🏆 High Scores</h1>
+
+    @if (topScores == null)
+    {
+      <p>Loading leaderboard...</p>
+    }
+    else if (topScores.Count == 0)
+    {
+      <p class="no-scores">No scores yet. Play a game to get on the leaderboard!</p>
+    }
+    else
+    {
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Score</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var (score, rank) in topScores.Select((s, i) => (s, i + 1)))
+          {
+            <tr>
+              <td class="rank">
+                @if (rank == 1)
+                {
+                  <span class="medal">🥇</span>
+                }
+                else if (rank == 2)
+                {
+                  <span class="medal">🥈</span>
+                }
+                else if (rank == 3)
+                {
+                  <span class="medal">🥉</span>
+                }
+                else
+                {
+                  <span>#@rank</span>
+                }
+              </td>
+              <td class="player-name">@score.PlayerName</td>
+              <td class="score">@score.Score.ToString("N0")</td>
+              <td class="date">@score.DateAchieved.ToString("MMM dd, yyyy HH:mm")</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    <div class="leaderboard-actions">
+      <a href="/game" class="btn btn-play">▶️ Play Again</a>
+      <a href="/" class="btn btn-secondary">← Back to Menu</a>
+    </div>
+  </div>
+</div>
+
+@code {
+  private List<HighScore>? topScores;
+
+  protected override async Task OnInitializedAsync()
+  {
+    await LoadLeaderboard();
+  }
+
+  private async Task LoadLeaderboard()
+  {
+    topScores = await LeaderboardService.GetTopScoresAsync(10);
+  }
+}

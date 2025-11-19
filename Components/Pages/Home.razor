@@ -1,0 +1,62 @@
+﻿@page "/"
+
+<PageTitle>Blazor Dash - Main Menu</PageTitle>
+
+<div class="menu-container">
+  <div class="menu-content">
+    <h1 class="game-title">🎮 Blazor Dash!</h1>
+    <p class="tagline">Dodge obstacles. Beat your high score.</p>
+
+    <div class="menu-buttons">
+      <a href="/game" class="btn btn-play">
+        ▶️ Play Game
+      </a>
+      <button class="btn btn-info" @onclick="ToggleHowToPlay">
+        ❓ How to Play
+      </button>
+      <a href="/leaderboard" class="btn btn-leaderboard">
+        🏆 Leaderboard
+      </a>
+    </div>
+
+    @if (showHowToPlay)
+    {
+      <div class="how-to-play">
+        <h2>How to Play</h2>
+        <ul>
+          <li><strong>Objective:</strong> Avoid obstacles and survive as long as possible!</li>
+          <li><strong>Jump:</strong> Press <kbd>SPACE</kbd> or <kbd>↑ UP ARROW</kbd> (or tap on mobile)</li>
+          <li><strong>Score:</strong> You earn 10 points per second survived</li>
+          <li><strong>Difficulty:</strong> Obstacles spawn faster and move faster over time</li>
+          <li><strong>Leaderboard:</strong> Your top scores are saved locally</li>
+        </ul>
+        <button class="btn btn-secondary" @onclick="ToggleHowToPlay">Close</button>
+      </div>
+    }
+
+    <div class="stats-preview">
+      <p>Personal Best: <strong>@bestScore</strong></p>
+      <p>Games Played: <strong>@totalGames</strong></p>
+    </div>
+  </div>
+</div>
+
+@code {
+  private bool showHowToPlay = false;
+  private int bestScore = 0;
+  private int totalGames = 0;
+
+  protected override Task OnInitializedAsync()
+  {
+    // Load stats from local storage (we can enhance this later)
+    // For now, just show placeholder data
+    bestScore = 1250;
+    totalGames = 15;
+    return Task.CompletedTask;
+  }
+
+  private void ToggleHowToPlay()
+  {
+    showHowToPlay = !showHowToPlay;
+  }
+}

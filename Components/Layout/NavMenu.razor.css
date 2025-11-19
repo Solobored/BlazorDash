@@ -1,0 +1,9 @@
+.navbar-toggler {
+    display: none;
+}
+
+.nav-scrollable {
+    display: none;
+}
+
+/* Navigation styles moved to MainLayout.razor.css */

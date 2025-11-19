@@ -1,0 +1,191 @@
+@page "/game"
+@using BlazorDash.Services
+@using System.Text.Json
+@using Microsoft.JSInterop
+@inject GameService GameService
+@inject LeaderboardService LeaderboardService
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<PageTitle>Blazor Dash - Game</PageTitle>
+
+<div class="game-page">
+  <div class="game-wrapper">
+    <div class="canvas-container">
+      <canvas #gameCanvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+
+    @if (gameState?.IsGameOver == true)
+    {
+      <div class="game-over-menu">
+        <div class="game-over-content">
+          <h2>GAME OVER</h2>
+          <p class="final-score">Final Score: <strong>@gameState.Score</strong></p>
+
+          @if (!string.IsNullOrEmpty(newHighScoreMessage))
+          {
+            <p class="new-high-score">🎉 @newHighScoreMessage</p>
+          }
+
+          <div class="score-input">
+            <label for="playerName">Player Name:</label>
+            <input type="text" id="playerName" @bind="playerName" maxlength="50" />
+          </div>
+
+          <div class="game-over-buttons">
+            <button class="btn btn-primary" @onclick="SaveAndRestart">Save & Play Again</button>
+            <a href="/" class="btn btn-secondary">Main Menu</a>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="game-info">
+    <a href="/" class="btn btn-small">← Back to Menu</a>
+    <p class="debug-info">@(gameState != null ? $"Score: {gameState.Score} | Time: {gameState.ElapsedSeconds:F1}s |      Obstacles: {gameState.Obstacles.Count}" : "Loading...")</p>
+  </div>
+</div>
+
+@code {
+#pragma warning disable CS0649
+  private ElementReference gameCanvas;
+#pragma warning restore CS0649
+  private IJSObjectReference? jsModule;
+  private DotNetObjectReference<Game>? dotnetRef;
+  private GameState? gameState;
+  private string playerName = "Player";
+  private string newHighScoreMessage = "";
+  private CancellationTokenSource? gameLoopCts;
+  private bool isInitialized = false;
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender && !isInitialized)
+    {
+      isInitialized = true;
+      await InitializeGame();
+    }
+  }
+
+  private async Task InitializeGame()
+  {
+    try
+    {
+      // Load JavaScript module
+      jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./game.js");
+
+      // Create dotnet reference for JS interop
+      dotnetRef = DotNetObjectReference.Create(this);
+
+      // Initialize canvas
+      await jsModule.InvokeVoidAsync("init", gameCanvas, dotnetRef);
+
+      // Create initial game state
+      gameState = GameService.NewGame();
+
+      // Start game loop
+      gameLoopCts = new CancellationTokenSource();
+      _ = GameLoopAsync(gameLoopCts.Token);
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Error initializing game: {ex.Message}");
+    }
+  }
+
+  private async Task GameLoopAsync(CancellationToken cancellationToken)
+  {
+    const float targetDeltaTime = 1f / 60f; // 60 FPS target
+    var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+    float accumulator = 0f;
+
+    while (!cancellationToken.IsCancellationRequested && gameState != null)
+    {
+      float deltaTime = (float)stopwatch.Elapsed.TotalSeconds;
+      stopwatch.Restart();
+      accumulator += deltaTime;
+
+      // Fixed timestep updates
+      while (accumulator >= targetDeltaTime && gameState != null)
+      {
+        gameState = GameService.Step(gameState, targetDeltaTime);
+        accumulator -= targetDeltaTime;
+      }
+
+      // Render
+      if (jsModule != null && gameState != null)
+      {
+        try
+        {
+          var stateJson = JsonSerializer.Serialize(gameState);
+          await jsModule.InvokeVoidAsync("render", stateJson);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine($"Render error: {ex.Message}");
+        }
+      }
+
+      // Update UI
+      await InvokeAsync(StateHasChanged);
+
+      // Small delay to prevent 100% CPU
+      await Task.Delay(1, cancellationToken);
+    }
+  }
+
+  [JSInvokable]
+  public async Task OnPlayerInput()
+  {
+    if (gameState != null && !gameState.IsGameOver)
+    {
+      GameService.PlayerJump(gameState);
+      await Task.CompletedTask;
+    }
+  }
+
+  private async Task SaveAndRestart()
+  {
+    if (gameState != null)
+    {
+      // Save score to database
+      await LeaderboardService.AddHighScoreAsync(playerName, gameState.Score);
+
+      // Check if it's a new high score
+      bool isTopScore = await LeaderboardService.IsTopScoreAsync(gameState.Score);
+      if (isTopScore)
+      {
+        int rank = await LeaderboardService.GetScoreRankAsync(gameState.Score);
+        newHighScoreMessage = $"New High Score! You're ranked #{rank}!";
+      }
+    }
+
+    // Restart the game
+    newHighScoreMessage = "";
+    playerName = "Player";
+    gameState = GameService.NewGame();
+    gameLoopCts?.Cancel();
+    gameLoopCts = new CancellationTokenSource();
+    _ = GameLoopAsync(gameLoopCts.Token);
+  }
+
+  async ValueTask IAsyncDisposable.DisposeAsync()
+  {
+    gameLoopCts?.Cancel();
+    gameLoopCts?.Dispose();
+
+    if (jsModule is not null)
+    {
+      try
+      {
+        await jsModule.InvokeVoidAsync("cleanup");
+        await jsModule.DisposeAsync();
+      }
+      catch { }
+    }
+
+    dotnetRef?.Dispose();
+  }
+}

@@ -1,0 +1,31 @@
+﻿@inherits LayoutComponentBase
+
+<div class="game-layout">
+    <header class="game-header">
+        <div class="header-content">
+            <div class="logo">🎮 Blazor Dash</div>
+            <nav class="header-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/game" class="nav-link">Play</a>
+                <a href="/leaderboard" class="nav-link">Leaderboard</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="game-main">
+        @Body
+    </main>
+
+    <footer class="game-footer">
+        <p>&copy; 2025 Blazor Dash - Built with .NET 9 & Blazor Server</p>
+    </footer>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    <div class="error-content">
+        <h2>⚠️ Error Occurred</h2>
+        <p>An unhandled error has occurred.</p>
+        <a href="." class="reload">Reload Page</a>
+        <span class="dismiss">✕</span>
+    </div>
+</div>
