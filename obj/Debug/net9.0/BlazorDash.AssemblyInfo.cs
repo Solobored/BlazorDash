@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BlazorDash")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dbb5732d8439cd3d87d156429f4b146dab726d83")]
 [assembly: System.Reflection.AssemblyProductAttribute("BlazorDash")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BlazorDash")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

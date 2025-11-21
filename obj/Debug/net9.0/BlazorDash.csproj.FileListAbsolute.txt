@@ -133,7 +133,6 @@ C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Develo
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\scopedcss\Components\Layout\NavMenu.razor.rz.scp.css
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\scopedcss\bundle\BlazorDash.styles.css
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\scopedcss\projectbundle\BlazorDash.bundle.scp.css
-C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\cy31zesqzv-n3odotudm5.gz
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\4hjzfopzm3-bqjiyaj88i.gz
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\koa6hgta5e-c2jlpeoesf.gz
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\iyqwdwtr7a-erw9l3u2r3.gz
@@ -191,3 +190,6 @@ C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Develo
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\v43bt19u7f-ug19ij8m26.gz
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\6j0mt9l52c-ug19ij8m26.gz
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\yywonfcuro-wx2xn2ps39.gz
+C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\BlazorDash.sourcelink.json
+C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\cy31zesqzv-xo38xatix3.gz
+C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\fl0rcnlc8r-fpdn2oa7us.gz

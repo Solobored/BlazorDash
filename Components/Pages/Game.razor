@@ -13,11 +13,9 @@
 <div class="game-page">
   <div class="game-wrapper">
     <div class="canvas-container">
-      <canvas #gameCanvas id="gameCanvas" width="800" height="600"></canvas>
-    </div>
-
-    @if (gameState?.IsGameOver == true)
-    {
+      <canvas #gameCanvas id="gameCanvas"></canvas>
+    </div> @if (gameState?.IsGameOver == true)
+        {
       <div class="game-over-menu">
         <div class="game-over-content">
           <h2>GAME OVER</h2>
