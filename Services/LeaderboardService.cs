@@ -76,4 +76,22 @@ public class LeaderboardService
 
     return betterScores + 1;
   }
+
+  /// <summary>
+  /// Returns the highest score recorded or 0 if none exist.
+  /// </summary>
+  public async Task<int> GetBestScoreAsync()
+  {
+    return await _context.HighScores.AnyAsync()
+        ? await _context.HighScores.MaxAsync(x => x.Score)
+        : 0;
+  }
+
+  /// <summary>
+  /// Returns the total number of recorded games.
+  /// </summary>
+  public Task<int> GetTotalGamesAsync()
+  {
+    return _context.HighScores.CountAsync();
+  }
 }

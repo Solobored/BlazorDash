@@ -1,5 +1,7 @@
 ﻿@page "/"
 
+@inject LeaderboardService LeaderboardService
+
 <PageTitle>Blazor Dash - Main Menu</PageTitle>
 
 <div class="menu-container">
@@ -11,7 +13,7 @@
       <a href="/game" class="btn btn-play">
         ▶️ Play Game
       </a>
-      <button class="btn btn-info" @onclick="ToggleHowToPlay">
+      <button type="button" class="btn btn-info" @onclick="ToggleHowToPlay">
         ❓ How to Play
       </button>
       <a href="/leaderboard" class="btn btn-leaderboard">
@@ -46,13 +48,10 @@
   private int bestScore = 0;
   private int totalGames = 0;
 
-  protected override Task OnInitializedAsync()
+  protected override async Task OnInitializedAsync()
   {
-    // Load stats from local storage (we can enhance this later)
-    // For now, just show placeholder data
-    bestScore = 1250;
-    totalGames = 15;
-    return Task.CompletedTask;
+    bestScore = await LeaderboardService.GetBestScoreAsync();
+    totalGames = await LeaderboardService.GetTotalGamesAsync();
   }
 
   private void ToggleHowToPlay()
