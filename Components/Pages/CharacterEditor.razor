@@ -1,0 +1,193 @@
+@page "/character-editor"
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject NavigationManager NavManager
+@implements IAsyncDisposable
+
+<PageTitle>Blazor Dash - Character Editor</PageTitle>
+
+<div class="character-editor-container">
+  <div class="character-editor-content">
+    <h1>🎨 Custom Character Editor</h1>
+    <p>Draw your character pixel-by-pixel in the 2x2 grid below. Click or drag to draw, right-click to erase. Adjust brush size for easier drawing.</p>
+    
+    <div class="editor-wrapper">
+      <div class="canvas-wrapper">
+        <canvas id="characterCanvas" @ref="characterCanvas" width="40" height="40"></canvas>
+        <p class="canvas-label">Character Canvas (40x40 pixels)</p>
+      </div>
+      
+      <div class="editor-controls">
+        <div class="color-picker">
+          <label>Color:</label>
+          <input type="color" value="@drawColor" @onchange="OnColorChanged" />
+          <span class="color-display" style="background-color: @drawColor"></span>
+        </div>
+        
+        <div class="brush-size">
+          <label>Brush Size:</label>
+          <input type="range" min="1" max="5" value="2" @onchange="OnBrushSizeChanged" />
+          <span>@brushSize px</span>
+        </div>
+        
+        <div class="editor-buttons">
+          <button class="btn btn-primary" @onclick="ClearCanvas">Clear</button>
+          <button class="btn btn-secondary" @onclick="SaveCharacter">Save Character</button>
+          <button class="btn btn-secondary" @onclick="LoadDefault">Reset to Default</button>
+        </div>
+        
+        <div class="preview-section">
+          <h3>Preview (In-Game Size)</h3>
+          <div class="preview-box">
+            <canvas id="previewCanvas" @ref="previewCanvas" width="40" height="40"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="editor-actions">
+      <a href="/" class="btn btn-secondary">← Back to Menu</a>
+      <a href="/game" class="btn btn-play">Play with Custom Character</a>
+    </div>
+  </div>
+</div>
+
+@code {
+  private ElementReference characterCanvas;
+  private ElementReference previewCanvas;
+  private IJSObjectReference? jsModule;
+  private string drawColor = "#4ecdc4";
+  private int brushSize = 2;
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      var modulePath = new Uri(new Uri(NavManager.BaseUri), "character-editor.js").ToString();
+      jsModule = await JS.InvokeAsync<IJSObjectReference>("import", modulePath);
+      await jsModule.InvokeVoidAsync("init", characterCanvas, previewCanvas, drawColor);
+      await LoadSavedCharacter();
+    }
+  }
+
+  private async Task ClearCanvas()
+  {
+    if (jsModule != null)
+    {
+      await jsModule.InvokeVoidAsync("clearCanvas");
+    }
+  }
+
+  private async Task SaveCharacter()
+  {
+    if (jsModule != null)
+    {
+      try
+      {
+        var characterData = await jsModule.InvokeAsync<string>("getCharacterData");
+        if (!string.IsNullOrEmpty(characterData))
+        {
+          try
+          {
+            // Save to localStorage
+            await JS.InvokeVoidAsync("localStorage.setItem", "customCharacter", characterData);
+            await UpdatePreview();
+            
+            // Trigger custom event so game can reload character (works in same window)
+            await JS.InvokeVoidAsync("eval", 
+              "if (window.dispatchEvent) { " +
+              "  window.dispatchEvent(new Event('characterUpdated')); " +
+              "  console.log('Character saved and event dispatched'); " +
+              "}");
+            
+            await JS.InvokeVoidAsync("alert", "Character saved successfully!");
+          }
+          catch (Exception storageEx)
+          {
+            Console.WriteLine($"Storage error: {storageEx.Message}");
+            await JS.InvokeVoidAsync("alert", $"Error saving to storage: {storageEx.Message}");
+          }
+        }
+        else
+        {
+          await JS.InvokeVoidAsync("alert", "Error: Could not get character data. Please try drawing again.");
+        }
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Error in SaveCharacter: {ex.Message}");
+        await JS.InvokeVoidAsync("alert", $"Error saving character: {ex.Message}");
+      }
+    }
+  }
+
+  private async Task LoadDefault()
+  {
+    if (jsModule != null)
+    {
+      await jsModule.InvokeVoidAsync("loadDefault");
+      await UpdatePreview();
+    }
+  }
+
+  private async Task LoadSavedCharacter()
+  {
+    if (jsModule != null)
+    {
+      try
+      {
+        var saved = await JS.InvokeAsync<string>("localStorage.getItem", "customCharacter");
+        if (!string.IsNullOrEmpty(saved))
+        {
+          await jsModule.InvokeVoidAsync("loadCharacterData", saved);
+          await UpdatePreview();
+        }
+      }
+      catch { }
+    }
+  }
+
+  private async Task UpdatePreview()
+  {
+    if (jsModule != null)
+    {
+      await jsModule.InvokeVoidAsync("updatePreview");
+    }
+  }
+
+  private async Task OnColorChanged(ChangeEventArgs e)
+  {
+    drawColor = e.Value?.ToString() ?? "#4ecdc4";
+    if (jsModule != null)
+    {
+      await jsModule.InvokeVoidAsync("setColor", drawColor);
+    }
+    StateHasChanged();
+  }
+
+  private async Task OnBrushSizeChanged(ChangeEventArgs e)
+  {
+    if (int.TryParse(e.Value?.ToString(), out int size))
+    {
+      brushSize = size;
+      if (jsModule != null)
+      {
+        await jsModule.InvokeVoidAsync("setBrushSize", brushSize);
+      }
+      StateHasChanged();
+    }
+  }
+
+  async ValueTask IAsyncDisposable.DisposeAsync()
+  {
+    if (jsModule is not null)
+    {
+      try
+      {
+        await jsModule.DisposeAsync();
+      }
+      catch { }
+    }
+  }
+}
+

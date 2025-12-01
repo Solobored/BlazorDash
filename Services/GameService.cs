@@ -8,15 +8,16 @@ public class GameService
 {
   // Physics constants
   private const float GRAVITY = 2000f;          // pixels per second squared
-  private const float JUMP_VELOCITY = -600f;   // pixels per second (negative = upward)
+  private const float JUMP_VELOCITY = -700f;   // pixels per second (negative = upward, increased for better jump)
   private const float GROUND_Y = 500f;          // player ground level
+  private const int MAX_JUMPS = 3;              // Triple jump enabled
 
   // Game constants
-  private const float BASE_SPAWN_INTERVAL = 1.5f;  // seconds
-  private const float MIN_SPAWN_INTERVAL = 0.5f;   // minimum spawn interval
-  private const float SPAWN_SPEED_FACTOR = 0.15f;  // how much faster spawning gets
-  private const float OBSTACLE_BASE_SPEED = -400f; // pixels per second (moving left)
-  private const float OBSTACLE_SPEED_FACTOR = 50f; // how much faster obstacles get
+  private const float BASE_SPAWN_INTERVAL = 2.5f;  // seconds (slower spawning)
+  private const float MIN_SPAWN_INTERVAL = 1.0f;   // minimum spawn interval (slower)
+  private const float SPAWN_SPEED_FACTOR = 0.08f;  // how much faster spawning gets (slower increase)
+  private const float OBSTACLE_BASE_SPEED = -200f; // pixels per second (moving left, slower)
+  private const float OBSTACLE_SPEED_FACTOR = 20f; // how much faster obstacles get (slower increase)
 
   // Game dimensions
   private const float CANVAS_WIDTH = 800f;
@@ -37,10 +38,11 @@ public class GameService
     return new GameState
     {
       PlayerX = 100f,
-      PlayerY = GROUND_Y,
+      PlayerY = GROUND_Y - 40f, // Position so bottom aligns with ground (40 is player height)
       PlayerVelocityY = 0f,
       PlayerWidth = 40f,
       PlayerHeight = 40f,
+      JumpsRemaining = MAX_JUMPS,
       Obstacles = [],
       Score = 0,
       IsGameOver = false,
@@ -95,27 +97,41 @@ public class GameService
     // Update position
     state.PlayerY += state.PlayerVelocityY * deltaTime;
 
-    // Clamp to ground
-    if (state.PlayerY >= GROUND_Y)
+    // Clamp to ground (player bottom should be at GROUND_Y)
+    float playerBottom = state.PlayerY + state.PlayerHeight;
+    if (playerBottom >= GROUND_Y)
     {
-      state.PlayerY = GROUND_Y;
+      state.PlayerY = GROUND_Y - state.PlayerHeight;
       state.PlayerVelocityY = 0;
+      // Reset jumps when on ground
+      state.JumpsRemaining = MAX_JUMPS;
     }
   }
 
   /// <summary>
   /// Applies a jump impulse to the player.
-  /// Can only jump when on the ground.
+  /// Supports double jump - can jump once on ground and once in air.
   /// </summary>
   public void PlayerJump(GameState state)
   {
     if (state.IsGameOver)
       return;
 
-    // Only jump if on ground
-    if (Math.Abs(state.PlayerY - GROUND_Y) < 1f)
+    // Check if on ground
+    float playerBottom = state.PlayerY + state.PlayerHeight;
+    bool onGround = Math.Abs(playerBottom - GROUND_Y) < 1f;
+
+    // Reset jumps when on ground
+    if (onGround)
+    {
+      state.JumpsRemaining = MAX_JUMPS;
+    }
+
+    // Can jump if we have jumps remaining
+    if (state.JumpsRemaining > 0)
     {
       state.PlayerVelocityY = JUMP_VELOCITY;
+      state.JumpsRemaining--;
     }
   }
 
@@ -145,7 +161,7 @@ public class GameService
       var obstacle = new Obstacle
       {
         X = CANVAS_WIDTH,
-        Y = GROUND_Y - height, // Spawn above ground so height extends downward
+        Y = GROUND_Y - height, // Bottom of obstacle at ground level, extends upward
         Width = OBSTACLE_WIDTH,
         Height = height,
         VelocityX = OBSTACLE_BASE_SPEED - (OBSTACLE_SPEED_FACTOR * state.ElapsedSeconds)

@@ -766,6 +766,217 @@ input:focus {
 }
 
 /* ============================================
+   CHARACTER EDITOR STYLES
+   ============================================ */
+
+.character-editor-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+    padding: 20px;
+    width: 100%;
+}
+
+.character-editor-content {
+    background: white;
+    border-radius: 20px;
+    padding: 45px;
+    max-width: 900px;
+    width: 100%;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.6s ease-out;
+}
+
+.character-editor-content h1 {
+    text-align: center;
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 2.5em;
+    font-weight: 900;
+}
+
+.character-editor-content > p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1em;
+}
+
+.editor-wrapper {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.canvas-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#characterCanvas {
+    border: 3px solid #667eea;
+    border-radius: 10px;
+    cursor: crosshair;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    height: 400px;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.canvas-label {
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+.editor-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 250px;
+}
+
+.color-picker {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+}
+
+.color-picker label {
+    font-weight: 600;
+    color: #333;
+}
+
+.color-picker input[type="color"] {
+    width: 60px;
+    height: 40px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.color-display {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+}
+
+.brush-size {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+}
+
+.brush-size label {
+    font-weight: 600;
+    color: #333;
+    min-width: 80px;
+}
+
+.brush-size input[type="range"] {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+}
+
+.brush-size input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+}
+
+.brush-size input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+    border: none;
+}
+
+.brush-size span {
+    font-weight: 600;
+    color: #667eea;
+    min-width: 50px;
+    text-align: right;
+}
+
+.editor-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.preview-section {
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.preview-section h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.preview-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+}
+
+#previewCanvas {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .editor-wrapper {
+        flex-direction: column;
+    }
+    
+    .editor-controls {
+        width: 100%;
+    }
+    
+    .character-editor-content {
+        padding: 30px 20px;
+    }
+}
+
+/* ============================================
    PRINT STYLES
    ============================================ */
 

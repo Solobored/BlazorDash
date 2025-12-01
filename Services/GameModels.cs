@@ -59,6 +59,7 @@ public class GameState
   public float PlayerVelocityY { get; set; }
   public float PlayerWidth { get; set; } = 40;
   public float PlayerHeight { get; set; } = 40;
+  public int JumpsRemaining { get; set; } = 1; // For double jump
 
   public List<Obstacle> Obstacles { get; set; } = [];
 

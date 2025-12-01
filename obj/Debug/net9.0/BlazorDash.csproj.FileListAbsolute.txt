@@ -189,7 +189,8 @@ C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Develo
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\ref\BlazorDash.dll
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\v43bt19u7f-ug19ij8m26.gz
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\6j0mt9l52c-ug19ij8m26.gz
-C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\yywonfcuro-wx2xn2ps39.gz
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\BlazorDash.sourcelink.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\fl0rcnlc8r-fpdn2oa7us.gz
-C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\cy31zesqzv-dv7ehjqnz2.gz
+C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\yywonfcuro-6h58t9dzik.gz
+C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\izir8gu2gc-5dpjvkntro.gz
+C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\obj\Debug\net9.0\compressed\cy31zesqzv-v7y0xkhpkg.gz
