@@ -21,4 +21,14 @@ public class HighScore
   /// Date and time when the score was achieved.
   /// </summary>
   public DateTime DateAchieved { get; set; } = DateTime.UtcNow;
+
+  /// <summary>
+  /// Foreign key to the user who achieved this score (nullable for anonymous scores).
+  /// </summary>
+  public string? UserId { get; set; }
+
+  /// <summary>
+  /// Navigation property to the user.
+  /// </summary>
+  public ApplicationUser? User { get; set; }
 }

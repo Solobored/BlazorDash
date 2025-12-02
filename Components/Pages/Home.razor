@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-@inject LeaderboardService LeaderboardService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Blazor Dash - Main Menu</PageTitle>
 
@@ -22,6 +22,14 @@
       <a href="/character-editor" class="btn btn-info">
         🎨 Customize Character
       </a>
+      <div class="auth-buttons">
+        <a href="/login" class="btn btn-secondary">
+          🔐 Login
+        </a>
+        <a href="/register" class="btn btn-secondary">
+          📝 Register
+        </a>
+      </div>
     </div>
 
     @if (showHowToPlay)
@@ -33,29 +41,22 @@
           <li><strong>Jump:</strong> Press <kbd>SPACE</kbd> or <kbd>↑ UP ARROW</kbd> (or tap on mobile)</li>
           <li><strong>Score:</strong> You earn 10 points per second survived</li>
           <li><strong>Difficulty:</strong> Obstacles spawn faster and move faster over time</li>
-          <li><strong>Leaderboard:</strong> Your top scores are saved locally</li>
+          <li><strong>Leaderboard:</strong> Your scores are saved automatically</li>
+          <li><strong>Optional Login:</strong> Create an account to track scores across sessions</li>
         </ul>
         <button class="btn btn-secondary" @onclick="ToggleHowToPlay">Close</button>
       </div>
     }
 
     <div class="stats-preview">
-      <p>Personal Best: <strong>@bestScore</strong></p>
-      <p>Games Played: <strong>@totalGames</strong></p>
+      <h3>📊 Game Info</h3>
+      <p>Play as a guest or create an account to save your progress!</p>
     </div>
   </div>
 </div>
 
 @code {
   private bool showHowToPlay = false;
-  private int bestScore = 0;
-  private int totalGames = 0;
-
-  protected override async Task OnInitializedAsync()
-  {
-    bestScore = await LeaderboardService.GetBestScoreAsync();
-    totalGames = await LeaderboardService.GetTotalGamesAsync();
-  }
 
   private void ToggleHowToPlay()
   {

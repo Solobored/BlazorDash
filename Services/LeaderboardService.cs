@@ -18,13 +18,14 @@ public class LeaderboardService
   /// <summary>
   /// Adds a new high score to the database.
   /// </summary>
-  public async Task AddHighScoreAsync(string playerName, int score)
+  public async Task AddHighScoreAsync(string playerName, int score, string? userId = null)
   {
     var highScore = new HighScore
     {
       PlayerName = string.IsNullOrWhiteSpace(playerName) ? "Player" : playerName,
       Score = score,
-      DateAchieved = DateTime.UtcNow
+      DateAchieved = DateTime.UtcNow,
+      UserId = userId
     };
 
     _context.HighScores.Add(highScore);
@@ -32,13 +33,24 @@ public class LeaderboardService
   }
 
   /// <summary>
-  /// Gets the top 5 high scores, sorted by score descending.
+  /// Gets the top N high scores, sorted by score descending.
   /// </summary>
   public async Task<List<HighScore>> GetTopScoresAsync(int count = 5)
   {
     return await _context.HighScores
         .OrderByDescending(x => x.Score)
         .Take(count)
+        .ToListAsync();
+  }
+
+  /// <summary>
+  /// Gets all scores for a specific user.
+  /// </summary>
+  public async Task<List<HighScore>> GetUserScoresAsync(string userId)
+  {
+    return await _context.HighScores
+        .Where(x => x.UserId == userId)
+        .OrderByDescending(x => x.Score)
         .ToListAsync();
   }
 

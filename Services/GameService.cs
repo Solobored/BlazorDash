@@ -3,27 +3,53 @@ namespace BlazorDash.Services;
 /// <summary>
 /// Core game logic service for BlazorDash.
 /// Handles physics, obstacle spawning, collision detection, and game state updates.
+/// Implements a fixed timestep physics simulation for consistent gameplay across all devices.
 /// </summary>
 public class GameService
 {
   // Physics constants
-  private const float GRAVITY = 2000f;          // pixels per second squared
-  private const float JUMP_VELOCITY = -700f;   // pixels per second (negative = upward, increased for better jump)
-  private const float GROUND_Y = 500f;          // player ground level
-  private const int MAX_JUMPS = 3;              // Triple jump enabled
+  /// <summary>Gravitational acceleration in pixels per second squared.</summary>
+  private const float GRAVITY = 2000f;
+
+  /// <summary>Initial jump velocity in pixels per second (negative = upward).</summary>
+  private const float JUMP_VELOCITY = -700f;
+
+  /// <summary>Vertical position of the ground line in pixels.</summary>
+  private const float GROUND_Y = 500f;
+
+  /// <summary>Maximum number of consecutive jumps allowed (enables multi-jump gameplay).</summary>
+  private const int MAX_JUMPS = 3;
 
   // Game constants
-  private const float BASE_SPAWN_INTERVAL = 2.5f;  // seconds (slower spawning)
-  private const float MIN_SPAWN_INTERVAL = 1.0f;   // minimum spawn interval (slower)
-  private const float SPAWN_SPEED_FACTOR = 0.08f;  // how much faster spawning gets (slower increase)
-  private const float OBSTACLE_BASE_SPEED = -200f; // pixels per second (moving left, slower)
-  private const float OBSTACLE_SPEED_FACTOR = 20f; // how much faster obstacles get (slower increase)
+  /// <summary>Base interval in seconds between obstacle spawns at game start.</summary>
+  private const float BASE_SPAWN_INTERVAL = 2.5f;
+
+  /// <summary>Minimum spawn interval in seconds, prevents overcrowding at high speeds.</summary>
+  private const float MIN_SPAWN_INTERVAL = 1.0f;
+
+  /// <summary>Factor controlling how much faster obstacles spawn over time.</summary>
+  private const float SPAWN_SPEED_FACTOR = 0.08f;
+
+  /// <summary>Base velocity of obstacles in pixels per second (negative = moving left).</summary>
+  private const float OBSTACLE_BASE_SPEED = -200f;
+
+  /// <summary>Factor controlling how much faster obstacles move over time.</summary>
+  private const float OBSTACLE_SPEED_FACTOR = 20f;
 
   // Game dimensions
+  /// <summary>Canvas width in pixels.</summary>
   private const float CANVAS_WIDTH = 800f;
+
+  /// <summary>Canvas height in pixels.</summary>
   private const float CANVAS_HEIGHT = 600f;
+
+  /// <summary>Standard obstacle width in pixels.</summary>
   private const float OBSTACLE_WIDTH = 50f;
+
+  /// <summary>Minimum obstacle height in pixels.</summary>
   private const float OBSTACLE_HEIGHT_MIN = 60f;
+
+  /// <summary>Maximum obstacle height in pixels.</summary>
   private const float OBSTACLE_HEIGHT_MAX = 150f;
 
   private Random _random = new();

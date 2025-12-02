@@ -1,0 +1,111 @@
+@page "/user-profile"
+@using BlazorDash.Services
+@inject LeaderboardService LeaderboardService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Blazor Dash - User Profile</PageTitle>
+
+<div class="menu-container">
+  <div class="menu-content">
+    <h1 class="game-title">👤 User Profile</h1>
+    <p class="tagline">View your game statistics</p>
+
+    <div class="profile-card">
+      <div class="profile-stats">
+        <h2>Game Statistics</h2>
+        @if (userStats != null)
+        {
+          <p><strong>Total Games Played:</strong> @userStats["totalGames"]</p>
+          <p><strong>Personal Best:</strong> @userStats["bestScore"]</p>
+          <p><strong>Average Score:</strong> @userStats["averageScore"]</p>
+        }
+        else
+        {
+          <p>Loading statistics...</p>
+        }
+      </div>
+
+      @if (topScores != null && topScores.Any())
+      {
+        <div class="recent-scores">
+          <h2>Top 10 Scores (All Players)</h2>
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Score</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach (var (score, rank) in topScores.Select((s, i) => (s, i + 1)))
+              {
+                <tr>
+                  <td class="rank">
+                    @if (rank == 1)
+                    {
+                      <span class="medal">🥇</span>
+                    }
+                    else if (rank == 2)
+                    {
+                      <span class="medal">🥈</span>
+                    }
+                    else if (rank == 3)
+                    {
+                      <span class="medal">🥉</span>
+                    }
+                    else
+                    {
+                      <span>#@rank</span>
+                    }
+                  </td>
+                  <td class="player-name">@score.PlayerName</td>
+                  <td class="score">@score.Score.ToString("N0")</td>
+                  <td class="date">@score.DateAchieved.ToString("MMM dd, yyyy")</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+    <div class="profile-actions">
+      <a href="/game" class="btn btn-play">▶️ Play Again</a>
+      <a href="/" class="btn btn-secondary">← Back to Menu</a>
+    </div>
+  </div>
+</div>
+
+@code {
+  private Dictionary<string, string>? userStats;
+  private List<HighScore>? topScores;
+
+  protected override async Task OnInitializedAsync()
+  {
+    try
+    {
+      // Load statistics
+      var bestScore = await LeaderboardService.GetBestScoreAsync();
+      var totalGames = await LeaderboardService.GetTotalGamesAsync();
+      var allScores = await LeaderboardService.GetTopScoresAsync(1000);
+      
+      var averageScore = allScores.Any() ? (int)allScores.Average(s => s.Score) : 0;
+
+      userStats = new Dictionary<string, string>
+      {
+        { "bestScore", bestScore.ToString("N0") },
+        { "totalGames", totalGames.ToString() },
+        { "averageScore", averageScore.ToString("N0") }
+      };
+
+      // Load top scores
+      topScores = await LeaderboardService.GetTopScoresAsync(10);
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Error loading profile: {ex}");
+    }
+  }
+}

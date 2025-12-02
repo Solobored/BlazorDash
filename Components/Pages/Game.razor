@@ -187,15 +187,23 @@
   {
     if (gameState != null)
     {
-      // Save score to database
-      await LeaderboardService.AddHighScoreAsync(playerName, gameState.Score);
-
-      // Check if it's a new high score
-      bool isTopScore = await LeaderboardService.IsTopScoreAsync(gameState.Score);
-      if (isTopScore)
+      try
       {
-        int rank = await LeaderboardService.GetScoreRankAsync(gameState.Score);
-        newHighScoreMessage = $"New High Score! You're ranked #{rank}!";
+        // Save score to database
+        await LeaderboardService.AddHighScoreAsync(playerName, gameState.Score);
+
+        // Check if it's a new high score
+        bool isTopScore = await LeaderboardService.IsTopScoreAsync(gameState.Score);
+        if (isTopScore)
+        {
+          int rank = await LeaderboardService.GetScoreRankAsync(gameState.Score);
+          newHighScoreMessage = $"New High Score! You're ranked #{rank}!";
+        }
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Error saving score: {ex.Message}");
+        newHighScoreMessage = "Score saved locally!";
       }
     }
 

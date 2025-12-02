@@ -32,6 +32,10 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/josva/OneDrive/Documentos/BYU Software Development/.Net Software Development/BlazorDash/Components/Pages/AccessDenied.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBY2Nlc3NEZW5pZWQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/josva/OneDrive/Documentos/BYU Software Development/.Net Software Development/BlazorDash/Components/Pages/CharacterEditor.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDaGFyYWN0ZXJFZGl0b3IucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -54,6 +58,22 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/josva/OneDrive/Documentos/BYU Software Development/.Net Software Development/BlazorDash/Components/Pages/Leaderboard.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMZWFkZXJib2FyZC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/josva/OneDrive/Documentos/BYU Software Development/.Net Software Development/BlazorDash/Components/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dpbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/josva/OneDrive/Documentos/BYU Software Development/.Net Software Development/BlazorDash/Components/Pages/Logout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/josva/OneDrive/Documentos/BYU Software Development/.Net Software Development/BlazorDash/Components/Pages/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZWdpc3Rlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/josva/OneDrive/Documentos/BYU Software Development/.Net Software Development/BlazorDash/Components/Pages/UserProfile.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xVc2VyUHJvZmlsZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/josva/OneDrive/Documentos/BYU Software Development/.Net Software Development/BlazorDash/Components/Pages/Weather.razor]

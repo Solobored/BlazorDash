@@ -1,0 +1,23 @@
+@page "/logout"
+@using Microsoft.AspNetCore.Identity
+@using BlazorDash.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
+
+<PageTitle>Blazor Dash - Logging Out</PageTitle>
+
+@code {
+  protected override async Task OnInitializedAsync()
+  {
+    try
+    {
+      await SignInManager.SignOutAsync();
+      NavigationManager.NavigateTo("/");
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Logout error: {ex}");
+      NavigationManager.NavigateTo("/");
+    }
+  }
+}
