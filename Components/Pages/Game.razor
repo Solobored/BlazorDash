@@ -219,26 +219,33 @@
     {
       try
       {
-        // Save score to database with user ID if authenticated
-        await LeaderboardService.AddHighScoreAsync(playerName, gameState.Score, currentUserId);
-
-        // Check if it's a new high score
-        bool isTopScore = await LeaderboardService.IsTopScoreAsync(gameState.Score);
-        if (isTopScore)
+        if (!string.IsNullOrEmpty(currentUserId))
         {
-          int rank = await LeaderboardService.GetScoreRankAsync(gameState.Score);
-          newHighScoreMessage = $"New High Score! You're ranked #{rank}!";
+          // Save score to database only for authenticated users
+          await LeaderboardService.AddHighScoreAsync(playerName, gameState.Score, currentUserId);
+
+          // Check if it's a new high score
+          bool isTopScore = await LeaderboardService.IsTopScoreAsync(gameState.Score);
+          if (isTopScore)
+          {
+            int rank = await LeaderboardService.GetScoreRankAsync(gameState.Score);
+            newHighScoreMessage = $"New High Score! You're ranked #{rank}!";
+          }
+        }
+        else
+        {
+          // Guests can play but scores are not persisted
+          newHighScoreMessage = "Login or create an account to save your scores.";
         }
       }
       catch (Exception ex)
       {
         Console.WriteLine($"Error saving score: {ex.Message}");
-        newHighScoreMessage = "Score saved locally!";
+        newHighScoreMessage = "Could not save score. Please try again.";
       }
     }
 
     // Restart the game
-    newHighScoreMessage = "";
     gameState = GameService.NewGame();
     isGameStarted = true;
     gameLoopCts?.Cancel();

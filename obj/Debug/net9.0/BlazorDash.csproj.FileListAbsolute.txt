@@ -1,6 +1,5 @@
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\bin\Debug\net9.0\appsettings.Development.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\bin\Debug\net9.0\appsettings.json
-C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\bin\Debug\net9.0\vercel.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\bin\Debug\net9.0\BlazorDash.staticwebassets.runtime.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\bin\Debug\net9.0\BlazorDash.staticwebassets.endpoints.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\BlazorDash\bin\Debug\net9.0\BlazorDash.exe

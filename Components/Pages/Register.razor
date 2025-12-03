@@ -124,8 +124,11 @@
       {
         await UserManager.AddToRoleAsync(user, "User");
         Logger.LogInformation("User {Email} registered successfully.", registerModel.Email);
-        await SignInManager.SignInAsync(user, isPersistent: false);
-        NavManager.NavigateTo("/", forceLoad: true);
+
+        // Do not sign in directly from the Blazor component (causes headers read-only error).
+        // Instead, redirect to the login page so the user can sign in there.
+        var emailParam = Uri.EscapeDataString(registerModel.Email);
+        NavManager.NavigateTo($"/login?email={emailParam}", forceLoad: true);
       }
       else
       {
