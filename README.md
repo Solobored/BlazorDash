@@ -2,7 +2,7 @@
 
 A responsive, obstacle-dodging browser game built with **.NET 9 Blazor Server**. The player controls a character that automatically moves forward and must jump to dodge randomly generated obstacles. Score increases with survival time, and top scores are persisted in SQLite.
 
-Deploy to [Vercel](https://vercel.com) or run locally with `dotnet run`
+Deploy to [Render](https://render.com) (Docker) or run locally with `dotnet run`
 
 ---
 
@@ -54,15 +54,16 @@ dotnet run
 
 Navigate to `http://localhost:5059`
 
-### Cloud Deployment (Vercel)
+### Cloud Deployment (Render, Docker)
 
 1. Push code to GitHub
-2. Connect repository to Vercel
-3. Vercel auto-detects .NET project
-4. Configure build: `dotnet publish -c Release -o ./publish`
-5. Deploy!
+2. In Render, create a **New Web Service** and connect the repository
+3. Environment: **Docker**
+4. Root directory: `.` (project root)
+5. Render detectará el `Dockerfile` y construirá la imagen automáticamente
+6. Deploy!
 
-Your app will be live at: `https://your-project.vercel.app`
+Your app will be live at a URL like: `https://blazordash.onrender.com`
 
 ---
 
@@ -122,7 +123,7 @@ BlazorDash/
 │   └── app.css                  # Styling
 ├── Program.cs                   # Startup
 ├── appsettings.json             # Config
-└── vercel.json                  # Vercel config
+└── Dockerfile                   # Render/Docker config
 ```
 
 ---
