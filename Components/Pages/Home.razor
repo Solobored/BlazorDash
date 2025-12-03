@@ -1,6 +1,11 @@
-﻿@page "/"
-
+@page "/"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using BlazorDash.Data
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 
 <PageTitle>Blazor Dash - Main Menu</PageTitle>
 
@@ -8,6 +13,21 @@
   <div class="menu-content">
     <h1 class="game-title">🎮 Blazor Dash!</h1>
     <p class="tagline">Dodge obstacles. Beat your high score.</p>
+
+    <!-- User Info Section -->
+    @if (isAuthenticated)
+    {
+      <div class="user-header">
+        <div class="user-info">
+          <p>Welcome, <strong>@userDisplayName</strong>! 👋</p>
+          @if (!string.IsNullOrEmpty(userEmail))
+          {
+            <small>Logged in as: @userEmail</small>
+          }
+        </div>
+        <button class="btn btn-danger" @onclick="HandleLogout">🚪 Logout</button>
+      </div>
+    }
 
     <div class="menu-buttons">
       <a href="/game" class="btn btn-play">
@@ -22,14 +42,20 @@
       <a href="/character-editor" class="btn btn-info">
         🎨 Customize Character
       </a>
-      <div class="auth-buttons">
-        <a href="/login" class="btn btn-secondary">
-          🔐 Login
+
+      @if (isAuthenticated)
+      {
+        <a href="/user-profile" class="btn btn-secondary">
+          👤 My Profile
         </a>
-        <a href="/register" class="btn btn-secondary">
-          📝 Register
-        </a>
-      </div>
+      }
+      else
+      {
+        <div class="auth-buttons">
+          <a href="/login" class="btn btn-secondary">🔒 Login</a>
+          <a href="/register" class="btn btn-secondary">📝 Register</a>
+        </div>
+      }
     </div>
 
     @if (showHowToPlay)
@@ -50,16 +76,96 @@
 
     <div class="stats-preview">
       <h3>📊 Game Info</h3>
-      <p>Play as a guest or create an account to save your progress!</p>
+      @if (isAuthenticated)
+      {
+        <p>You're logged in! Your scores will be saved to your profile. <a href="/user-profile">View your stats →</a></p>
+      }
+      else
+      {
+        <p>Play as a guest or create an account to save your progress!</p>
+      }
     </div>
   </div>
 </div>
 
 @code {
   private bool showHowToPlay = false;
+  private bool isAuthenticated = false;
+  private string userDisplayName = "";
+  private string userEmail = "";
+
+  protected override async Task OnInitializedAsync()
+  {
+    await CheckAuthenticationState();
+  }
+
+  protected override async Task OnParametersSetAsync()
+  {
+    await CheckAuthenticationState();
+  }
+
+  private async Task CheckAuthenticationState()
+  {
+    try
+    {
+      var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+      var user = authState.User;
+      
+      isAuthenticated = user?.Identity?.IsAuthenticated ?? false;
+      
+      if (isAuthenticated && user != null)
+      {
+        var username = user.FindFirst(ClaimTypes.Name)?.Value;
+        userEmail = user.FindFirst(ClaimTypes.Email)?.Value ?? "";
+        
+        if (!string.IsNullOrEmpty(username))
+        {
+          var appUser = await UserManager.FindByNameAsync(username);
+          if (appUser != null)
+          {
+            userDisplayName = appUser.DisplayName ?? appUser.UserName ?? "User";
+            userEmail = appUser.Email ?? userEmail;
+          }
+          else
+          {
+            userDisplayName = username;
+          }
+        }
+        else
+        {
+          userDisplayName = "User";
+        }
+      }
+      else
+      {
+        userDisplayName = "";
+        userEmail = "";
+      }
+      
+      StateHasChanged();
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Error checking auth: {ex.Message}");
+      isAuthenticated = false;
+    }
+  }
 
   private void ToggleHowToPlay()
   {
     showHowToPlay = !showHowToPlay;
+  }
+
+  private void HandleLogout()
+  {
+    try
+    {
+      NavigationManager.NavigateTo("/logout", forceLoad: true);
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Logout error: {ex.Message}");
+      NavigationManager.NavigateTo("/", forceLoad: true);
+    }
   }
 }

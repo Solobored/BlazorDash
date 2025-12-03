@@ -1,7 +1,13 @@
 @page "/user-profile"
 @using BlazorDash.Services
+@using BlazorDash.Data
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
 @inject LeaderboardService LeaderboardService
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 
 <PageTitle>Blazor Dash - User Profile</PageTitle>
 
@@ -10,9 +16,18 @@
     <h1 class="game-title">👤 User Profile</h1>
     <p class="tagline">View your game statistics</p>
 
+    @if (isAuthenticated && !string.IsNullOrEmpty(userName))
+    {
+      <div class="user-header">
+        <div class="user-info">
+          <p>Welcome, <strong>@userName</strong>! 👋</p>
+        </div>
+      </div>
+    }
+
     <div class="profile-card">
       <div class="profile-stats">
-        <h2>Game Statistics</h2>
+        <h2>@(isAuthenticated ? "Your Game Statistics" : "Game Statistics")</h2>
         @if (userStats != null)
         {
           <p><strong>Total Games Played:</strong> @userStats["totalGames"]</p>
@@ -24,6 +39,32 @@
           <p>Loading statistics...</p>
         }
       </div>
+
+      @if (isAuthenticated && userScores != null && userScores.Any())
+      {
+        <div class="recent-scores">
+          <h2>Your Recent Scores</h2>
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Score</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach (var (score, rank) in userScores.Take(10).Select((s, i) => (s, i + 1)))
+              {
+                <tr>
+                  <td class="rank">#@rank</td>
+                  <td class="score">@score.Score.ToString("N0")</td>
+                  <td class="date">@score.DateAchieved.ToString("MMM dd, yyyy HH:mm")</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
 
       @if (topScores != null && topScores.Any())
       {
@@ -81,26 +122,53 @@
 @code {
   private Dictionary<string, string>? userStats;
   private List<HighScore>? topScores;
+  private List<HighScore>? userScores;
+  private string? currentUserId;
+  private string? userName;
+  private bool isAuthenticated = false;
 
   protected override async Task OnInitializedAsync()
   {
     try
     {
-      // Load statistics
-      var bestScore = await LeaderboardService.GetBestScoreAsync();
-      var totalGames = await LeaderboardService.GetTotalGamesAsync();
-      var allScores = await LeaderboardService.GetTopScoresAsync(1000);
-      
-      var averageScore = allScores.Any() ? (int)allScores.Average(s => s.Score) : 0;
+      // Check authentication
+      var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+      var user = authState.User;
+      isAuthenticated = user?.Identity?.IsAuthenticated ?? false;
 
-      userStats = new Dictionary<string, string>
+      if (isAuthenticated && user != null)
       {
-        { "bestScore", bestScore.ToString("N0") },
-        { "totalGames", totalGames.ToString() },
-        { "averageScore", averageScore.ToString("N0") }
-      };
+        var username = user.FindFirst(ClaimTypes.Name)?.Value;
+        if (!string.IsNullOrEmpty(username))
+        {
+          var appUser = await UserManager.FindByNameAsync(username);
+          if (appUser != null)
+          {
+            currentUserId = appUser.Id;
+            userName = appUser.DisplayName ?? appUser.UserName ?? "User";
+            
+            // Load user-specific scores
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+              userScores = await LeaderboardService.GetUserScoresAsync(currentUserId);
+              
+              // Calculate user-specific statistics
+              var userBestScore = userScores != null && userScores.Any() ? userScores.Max(s => s.Score) : 0;
+              var userTotalGames = userScores?.Count ?? 0;
+              var userAverageScore = userScores != null && userScores.Any() ? (int)userScores.Average(s => s.Score) : 0;
 
-      // Load top scores
+              userStats = new Dictionary<string, string>
+              {
+                { "bestScore", userBestScore.ToString("N0") },
+                { "totalGames", userTotalGames.ToString() },
+                { "averageScore", userAverageScore.ToString("N0") }
+              };
+            }
+          }
+        }
+      }
+
+      // Always load top scores for comparison
       topScores = await LeaderboardService.GetTopScoresAsync(10);
     }
     catch (Exception ex)

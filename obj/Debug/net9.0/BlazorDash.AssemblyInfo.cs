@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BlazorDash")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd3a7eb6bea24866b8517600e248bee1adb8a6d1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+167729c9e7aae23b1eefea3abbf34085dd15b2bd")]
 [assembly: System.Reflection.AssemblyProductAttribute("BlazorDash")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BlazorDash")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

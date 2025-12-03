@@ -1,11 +1,17 @@
 @page "/game"
 @using BlazorDash.Services
+@using BlazorDash.Data
 @using System.Text.Json
+@using System.Security.Claims
 @using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Components.Authorization
 @inject GameService GameService
 @inject LeaderboardService LeaderboardService
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 @implements IAsyncDisposable
 
 <PageTitle>Blazor Dash - Game</PageTitle>
@@ -48,7 +54,8 @@
     }
     else if (gameState != null && isGameStarted)
     {
-      <p class="debug-info">Score: @gameState.Score | Time: @gameState.ElapsedSeconds.ToString("F1")s | Obstacles: @gameState.Obstacles.Count</p>
+      <p class="debug-info">Score: @gameState.Score | Time: @gameState.ElapsedSeconds.ToString("F1")s | Obstacles:
+        @gameState.Obstacles.Count</p>
     }
     else if (gameState != null && !isGameStarted)
     {
@@ -74,6 +81,29 @@
   private bool isInitialized = false;
   private bool isGameStarted = false;
   private string? initializationError = null;
+  private ApplicationUser? currentUser = null;
+  private string? currentUserId = null;
+
+  protected override async Task OnInitializedAsync()
+  {
+    // Get current authenticated user
+    var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    var user = authState.User;
+
+    if (user?.Identity?.IsAuthenticated == true)
+    {
+      var username = user.FindFirst(ClaimTypes.Name)?.Value;
+      if (!string.IsNullOrEmpty(username))
+      {
+        currentUser = await UserManager.FindByNameAsync(username);
+        if (currentUser != null)
+        {
+          currentUserId = currentUser.Id;
+          playerName = currentUser.DisplayName ?? currentUser.UserName ?? "Player";
+        }
+      }
+    }
+  }
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
@@ -107,7 +137,7 @@
       // Start game loop
       gameLoopCts = new CancellationTokenSource();
       _ = GameLoopAsync(gameLoopCts.Token);
-      
+
       // Force UI update
       await InvokeAsync(StateHasChanged);
     }
@@ -189,8 +219,8 @@
     {
       try
       {
-        // Save score to database
-        await LeaderboardService.AddHighScoreAsync(playerName, gameState.Score);
+        // Save score to database with user ID if authenticated
+        await LeaderboardService.AddHighScoreAsync(playerName, gameState.Score, currentUserId);
 
         // Check if it's a new high score
         bool isTopScore = await LeaderboardService.IsTopScoreAsync(gameState.Score);
@@ -209,7 +239,6 @@
 
     // Restart the game
     newHighScoreMessage = "";
-    playerName = "Player";
     gameState = GameService.NewGame();
     isGameStarted = true;
     gameLoopCts?.Cancel();

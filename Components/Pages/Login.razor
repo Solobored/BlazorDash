@@ -1,115 +1,81 @@
 @page "/login"
-@using Microsoft.AspNetCore.Identity
-@using BlazorDash.Data
-@inject SignInManager<ApplicationUser> SignInManager
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.WebUtilities
 @inject NavigationManager NavigationManager
 
 <PageTitle>Blazor Dash - Login</PageTitle>
 
-<div class="menu-container">
-  <div class="menu-content">
-    <h1 class="game-title">🔐 Login</h1>
-    <p class="tagline">Sign in to save your scores</p>
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>🎮 Blazor Dash Login</h1>
+      <p class="auth-subtitle">Sign in to save your scores</p>
+    </div>
 
     @if (!string.IsNullOrEmpty(errorMessage))
     {
-      <div class="error-message">
-        <p>❌ @errorMessage</p>
+      <div class="alert alert-danger" role="alert">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-content">
+          <strong>Error:</strong> @errorMessage
+        </div>
       </div>
     }
 
-    @if (!string.IsNullOrEmpty(successMessage))
-    {
-      <div class="success-message">
-        <p>✅ @successMessage</p>
-      </div>
-    }
-
-    <form @onsubmit="HandleLogin" class="login-form">
+    <form method="post" action="/login-handler" class="auth-form">
       <div class="form-group">
-        <label for="username">Username or Email:</label>
-        <input type="text" id="username" @bind="username" required class="form-input" />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" @bind="password" required class="form-input" />
-      </div>
-
-      <div class="form-group">
-        <label for="rememberMe">
-          <input type="checkbox" id="rememberMe" @bind="rememberMe" />
-          Remember me
+        <label for="email">
+          <span class="label-icon">📧</span>
+          Email Address
         </label>
+        <input type="email" id="email" name="Email" class="form-control" 
+               placeholder="your@email.com" required 
+               value="@loginEmail" />
       </div>
 
-      <button type="submit" class="btn btn-primary" disabled="@isLoading">
-        @if (isLoading)
-        {
-          <span>Logging in...</span>
-        }
-        else
-        {
-          <span>Login</span>
-        }
+      <div class="form-group">
+        <label for="password">
+          <span class="label-icon">🔒</span>
+          Password
+        </label>
+        <input type="password" id="password" name="Password" class="form-control"
+               placeholder="Enter your password" required />
+      </div>
+
+      <div class="form-group form-check">
+        <input type="checkbox" id="rememberMe" name="RememberMe" class="form-check-input" />
+        <label class="form-check-label" for="rememberMe">Remember me</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">
+        <span class="btn-icon">🚀</span>
+        Sign In
       </button>
     </form>
 
-    <div class="auth-links">
-      <p>Don't have an account? <a href="/register">Create one</a></p>
-      <p><a href="/">← Back to Menu (Play without login)</a></p>
+    <div class="auth-footer">
+      <p>Don't have an account? <a href="/register" class="auth-link">Create one here</a></p>
+      <a href="/" class="auth-link back-link">← Back to Home</a>
     </div>
   </div>
 </div>
 
 @code {
-  private string username = "";
-  private string password = "";
-  private bool rememberMe = false;
-  private string errorMessage = "";
-  private string successMessage = "";
-  private bool isLoading = false;
+  private string? errorMessage;
+  private string loginEmail = "";
 
-  private async Task HandleLogin()
+  protected override void OnInitialized()
   {
-    try
+    // Check for error query parameter
+    var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+    var query = QueryHelpers.ParseQuery(uri.Query);
+    if (query.TryGetValue("error", out var error))
     {
-      isLoading = true;
-      errorMessage = "";
-      successMessage = "";
-
-      // Attempt sign in
-      var result = await SignInManager.PasswordSignInAsync(
-          username, password, rememberMe, lockoutOnFailure: false);
-
-      if (result.Succeeded)
-      {
-        successMessage = "Login successful! Redirecting...";
-        await Task.Delay(500);
-        NavigationManager.NavigateTo("/");
-      }
-      else if (result.IsLockedOut)
-      {
-        errorMessage = "Account is locked. Try again later.";
-      }
-      else if (result.RequiresTwoFactor)
-      {
-        // For now, we won't implement 2FA
-        errorMessage = "Two-factor authentication is not yet supported.";
-      }
-      else
-      {
-        errorMessage = "Invalid username or password.";
-      }
+      errorMessage = error.ToString();
     }
-    catch (Exception ex)
+    if (query.TryGetValue("email", out var email))
     {
-      errorMessage = $"An error occurred: {ex.Message}";
-      Console.WriteLine($"Login error: {ex}");
-    }
-    finally
-    {
-      isLoading = false;
+      loginEmail = email.ToString();
     }
   }
 }
