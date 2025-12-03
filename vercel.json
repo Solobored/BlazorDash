@@ -1,11 +1,5 @@
 {
   "buildCommand": "dotnet publish -c Release -o ./publish",
-  "functions": {
-    "api/**/*.cs": {
-      "memory": 1024,
-      "maxDuration": 60
-    }
-  },
   "env": {
     "ASPNETCORE_ENVIRONMENT": "Production"
   }
